@@ -1,17 +1,9 @@
 # proyecto1
 
-A new Flutter project.
+Aplicación Flutter con Firebase Authentication y Cloud Firestore.
 
-## Getting Started
+La entrada comienza en `SplashView`: comprueba la sesión y el perfil antes de abrir login, creación de perfil, bienvenida o Home. La bienvenida tiene tres páginas deslizables con espacios para tus fotos y botones **Siguiente**, **Omitir** y **Comenzar**.
 
-This project is a starting point for a Flutter application.
+Al omitir o completar se guarda `deslizablesVistos: true` en `Perfiles/{uid}`. Se recuerda por perfil en Firestore, sin preferencias locales por instalación. Los perfiles sin ese campo tienen la bienvenida pendiente.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Consulta [la guía de bienvenida](docs/onboarding.md) para añadir fotos y conectar la creación de perfil. `/CreatePerfilView` y `/HomeView` muestran avisos temporales hasta implementar sus pantallas.
