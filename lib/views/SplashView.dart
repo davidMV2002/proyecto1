@@ -35,7 +35,7 @@ class _SplashViewState extends State<SplashView> {
     });
     try {
       // Simula una carga para poder ver el splash y su indicador.
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 4));
       if (!mounted) return;
       final route = await (widget.destino ?? EntradaApp.destino)().timeout(
         const Duration(seconds: 20),
