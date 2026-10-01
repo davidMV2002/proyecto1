@@ -1,18 +1,40 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Registroview extends StatelessWidget{
+  var faInstance=FirebaseAuth.instance;
   late BuildContext miContext;
   TextEditingController userController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   TextEditingController repasswordController = new TextEditingController();
 
-  void funClickCancelar(){
+  void funClickCancelar() async{
     Navigator.popAndPushNamed(miContext, "/RegisterView");
   }
 
-  void funClickAceptar(){
+  Future<void> funClickAceptar() async {
+    if(repasswordController.text!=passwordController.text){
+      print("LAS CONTRASEÑAS NO COINCIDEN");
+    }
+    else{
+      try{
+        final credencial = await faInstance.createUserWithEmailAndPassword(email: userController.text, password: passwordController.text);
 
+        if(credencial.user!=null){
+          Navigator.popAndPushNamed(miContext, "/Profileview");
+        }
+
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          print('The password provided is too weak.');
+        } else if (e.code == 'email-already-in-use') {
+          print('The account already exists for that email.');
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
   }
 
   @override
