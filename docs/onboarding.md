@@ -61,7 +61,7 @@ Navigator.of(context).pushReplacementNamed('/SplashView');
 
 ## Splash y comprobaciones
 
-El splash muestra la animación de bienvenida de su URL y carga mientras decide la entrada. Incluye un sustituto para imagen fallida o lenta y **Reintentar** si no consigue decidir el destino. La imagen del splash es independiente de las tres fotos locales.
+El splash muestra la animación de bienvenida de su URL. Espera un segundo con `Future.delayed` para mostrar la carga y después decide la entrada. Incluye un sustituto para imagen fallida o lenta y **Reintentar** si no consigue decidir el destino. La imagen del splash es independiente de las tres fotos locales.
 
 Se han comprobado las decisiones de ruta, el modelo y la interacción de bienvenida mediante ocho pruebas Flutter. No se ha validado contra Firebase real ni en un dispositivo real. El análisis no presenta errores, pero mantiene advertencias previas de login/registro y avisos de estilo.
 
