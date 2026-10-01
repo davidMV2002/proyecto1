@@ -8,7 +8,7 @@ Aplicacion Flutter con Dart y Firebase. El codigo esta en `lib/`; las pantallas 
 
 El usuario ha solicitado dos agentes especializados para colaborar en este proyecto. Delega tareas relevantes a estos roles:
 
-- **diseno_app**: cambios y revisiones de interfaz, navegacion, estilos, accesibilidad y adaptacion a movil y web. Instrucciones: `.codex/agents/diseno_app.toml`.
+- **ui_ux_pro_max**: cambios y revisiones de interfaz mediante la skill UI UX Pro Max. Instrucciones: `.codex/agents/ui_ux_pro_max.toml`; skill: `.agents/skills/ui-ux-pro-max/SKILL.md`. Para este proyecto, usa las recomendaciones de Flutter (`--stack flutter`).
 - **documentacion_git**: documentacion de cambios y commits locales al terminar tareas verificadas. Instrucciones: `.codex/agents/documentacion_git.toml`.
 
 Usa los agentes personalizados por nombre cuando el cliente lo permita. Si la herramienta solo admite prompts, lee su archivo TOML y transmite sus instrucciones al subagente. No hace falta iniciar los dos para cada pregunta: delega segun la tarea.

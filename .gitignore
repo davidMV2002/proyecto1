@@ -46,3 +46,7 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Cache de scripts de skills
+.agents/**/__pycache__/
+.agents/**/*.pyc
