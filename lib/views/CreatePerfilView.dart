@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../FbObjects/Perfil.dart';
+import '../DataHolder.dart';
 
 class Createperfilview extends StatelessWidget {
   late BuildContext miContext;
@@ -11,7 +12,7 @@ class Createperfilview extends StatelessWidget {
   TextEditingController nombreController = TextEditingController();
   FirebaseFirestore db = FirebaseFirestore.instance;
 
-  void funConfirmar() {
+  void funConfirmar() async {
     if (edadController.text.isNotEmpty) {
       final perfiles = db.collection("Perfiles");
       final perfil = new Perfil(
@@ -20,10 +21,19 @@ class Createperfilview extends StatelessWidget {
         edad: int.parse(edadController.text),
         deslizablesVistos: false,
       );
-      perfiles
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .set(perfil.toFirestore());
-      Navigator.popAndPushNamed(miContext, "/HomeView");
+      try {
+        await perfiles.doc(perfil.uid).set(perfil.toFirestore());
+        Dataholder.instance.perfilUsuario = perfil;
+        if (!miContext.mounted) return;
+        Navigator.popAndPushNamed(miContext, "/OnBoardingView");
+      } catch (_) {
+        if (!miContext.mounted) return;
+        ScaffoldMessenger.of(miContext).showSnackBar(
+          const SnackBar(
+            content: Text('No se pudo guardar el perfil. Inténtalo de nuevo.'),
+          ),
+        );
+      }
     }
   }
 

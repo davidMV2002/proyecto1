@@ -1,10 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../services/EntradaApp.dart';
+import '../DataHolder.dart';
 
 class Onboardingview extends StatefulWidget {
-  const Onboardingview({super.key, this.completar});
-  final Future<void> Function()? completar;
+  const Onboardingview({super.key});
   @override
   State<Onboardingview> createState() => _Onboardingview();
 }
@@ -35,9 +36,17 @@ class _Onboardingview extends State<Onboardingview> {
       _error = null;
     });
     try {
-      await (widget.completar ?? EntradaApp.completarOnboarding)().timeout(
-        const Duration(seconds: 20),
-      );
+      final usuario = FirebaseAuth.instance.currentUser;
+      if (usuario == null) {
+        Navigator.pushReplacementNamed(context, '/LoginView');
+        return;
+      }
+
+      await FirebaseFirestore.instance
+          .collection('Perfiles')
+          .doc(usuario.uid)
+          .update({'deslizablesVistos': true});
+      Dataholder.instance.perfilUsuario.deslizablesVistos = true;
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/HomeView');
     } catch (_) {

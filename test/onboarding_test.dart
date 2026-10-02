@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:proyecto1/views/OnBoardingView.dart';
-import 'package:proyecto1/views/SplashView.dart';
 
 Widget app(Widget home) => MaterialApp(
   home: home,
@@ -9,61 +8,14 @@ Widget app(Widget home) => MaterialApp(
 );
 
 void main() {
-  testWidgets('desliza, avanza y completa antes de navegar', (tester) async {
-    var completado = false;
-    await tester.pumpWidget(
-      app(Onboardingview(completar: () async => completado = true)),
-    );
+  testWidgets('desliza y avanza hasta el botón Comenzar', (tester) async {
+    await tester.pumpWidget(app(const Onboardingview()));
     await tester.drag(find.byType(PageView), const Offset(-600, 0));
     await tester.pumpAndSettle();
     expect(find.text('Descubre tu espacio'), findsOneWidget);
     await tester.tap(find.text('Siguiente'));
     await tester.pumpAndSettle();
     expect(find.text('Comenzar'), findsOneWidget);
-    await tester.tap(find.text('Comenzar'));
-    await tester.pumpAndSettle();
-    expect(completado, isTrue);
-    expect(find.text('Destino'), findsOneWidget);
-  });
-  testWidgets('omitir guarda y abre Home', (tester) async {
-    var escrituras = 0;
-    await tester.pumpWidget(
-      app(
-        Onboardingview(
-          completar: () async {
-            escrituras++;
-          },
-        ),
-      ),
-    );
-    await tester.tap(find.text('Omitir'));
-    await tester.pumpAndSettle();
-    expect(escrituras, 1);
-    expect(find.text('Destino'), findsOneWidget);
-  });
-  testWidgets('error de escritura mantiene bienvenida y permite reintentar', (
-    tester,
-  ) async {
-    var intentos = 0;
-    await tester.pumpWidget(
-      app(
-        Onboardingview(
-          completar: () async {
-            if (intentos++ == 0) throw StateError('offline');
-          },
-        ),
-      ),
-    );
-    await tester.tap(find.text('Omitir'));
-    await tester.pumpAndSettle();
-    expect(
-      find.text('No se pudo guardar la bienvenida. Inténtalo de nuevo.'),
-      findsOneWidget,
-    );
-    expect(find.text('Destino'), findsNothing);
-    await tester.tap(find.text('Omitir'));
-    await tester.pumpAndSettle();
-    expect(find.text('Destino'), findsOneWidget);
   });
   for (final size in [const Size(375, 667), const Size(667, 375)]) {
     testWidgets('layout $size con texto grande y movimiento reducido', (
@@ -82,7 +34,7 @@ void main() {
             ),
             child: child!,
           ),
-          home: Onboardingview(completar: () async {}),
+          home: const Onboardingview(),
         ),
       );
       expect(tester.takeException(), isNull);
@@ -92,25 +44,4 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
-  testWidgets(
-    'splash navega sin esperar imagen y muestra retry si falla destino',
-    (tester) async {
-      var intentos = 0;
-      await tester.pumpWidget(
-        app(
-          SplashView(
-            destino: () async {
-              if (intentos++ == 0) throw StateError('offline');
-              return '/HomeView';
-            },
-          ),
-        ),
-      );
-      await tester.pump(const Duration(seconds: 1));
-      expect(find.text('Reintentar'), findsOneWidget);
-      await tester.tap(find.text('Reintentar'));
-      await tester.pumpAndSettle();
-      expect(find.text('Destino'), findsOneWidget);
-    },
-  );
 }

@@ -1,12 +1,12 @@
-import 'dart:async';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../services/EntradaApp.dart';
+import '../DataHolder.dart';
+import '../FbObjects/Perfil.dart';
 
 class SplashView extends StatefulWidget {
-  const SplashView({super.key, this.destino});
-  final Future<String> Function()? destino;
+  const SplashView({super.key});
   @override
   State<SplashView> createState() => _SplashViewState();
 }
@@ -15,16 +15,11 @@ class _SplashViewState extends State<SplashView> {
   static const _gif =
       'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2Q0emZtcWoxbzd0ZTJjMzZ2OWkyOHUwM3locXY2MWt5Y2lpM28yciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gQbVzXQQbGO7C/giphy.gif';
   bool _cargando = true;
-  bool _esperandoImagen = true;
-  Timer? _imagenTimeout;
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    _imagenTimeout = Timer(const Duration(seconds: 5), () {
-      if (mounted) setState(() => _esperandoImagen = false);
-    });
     _abrir();
   }
 
@@ -34,14 +29,35 @@ class _SplashViewState extends State<SplashView> {
       _error = null;
     });
     try {
-      // Simula una carga para poder ver el splash y su indicador.
       await Future.delayed(const Duration(seconds: 4));
       if (!mounted) return;
-      final route = await (widget.destino ?? EntradaApp.destino)().timeout(
-        const Duration(seconds: 20),
-      );
+      final usuario = FirebaseAuth.instance.currentUser;
+      String ruta;
+
+      if (usuario == null) {
+        ruta = '/LoginView';
+      } else {
+        final documento = await FirebaseFirestore.instance
+            .collection('Perfiles')
+            .doc(usuario.uid)
+            .get();
+
+        if (!documento.exists) {
+          ruta = '/CreatePerfilView';
+        } else {
+          final perfil = Perfil.fromFirestore(documento, null);
+          Dataholder.instance.perfilUsuario = perfil;
+
+          if (perfil.deslizablesVistos) {
+            ruta = '/HomeView';
+          } else {
+            ruta = '/OnBoardingView';
+          }
+        }
+      }
+
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(route);
+      Navigator.pushReplacementNamed(context, ruta);
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -64,12 +80,6 @@ class _SplashViewState extends State<SplashView> {
   );
 
   @override
-  void dispose() {
-    _imagenTimeout?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) => Scaffold(
     body: SafeArea(
       child: Center(
@@ -85,12 +95,6 @@ class _SplashViewState extends State<SplashView> {
                   child: Image.network(
                     _gif,
                     fit: BoxFit.contain,
-                    loadingBuilder: (context, child, progress) =>
-                        progress == null
-                        ? child
-                        : _esperandoImagen
-                        ? const Center(child: CircularProgressIndicator())
-                        : _placeholder(),
                     errorBuilder: (context, error, stackTrace) =>
                         _placeholder(),
                     semanticLabel: 'Animación de bienvenida',
