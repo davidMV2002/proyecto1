@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto1/views/CreatePerfilView.dart';
+import 'package:proyecto1/views/HomeView.dart';
 import 'package:proyecto1/views/LoginView.dart';
 import 'package:proyecto1/views/OnBoardingView.dart';
 import 'package:proyecto1/views/RegistroView.dart';
@@ -18,8 +19,9 @@ class Miapp extends StatelessWidget {
         '/LoginView': (context) => Loginview(),
         '/RegistroView': (context) => Registroview(),
         '/CreatePerfilView': (context) => Createperfilview(),
+        '/HomeView' : (context) => Homeview(),
         // Sustituye estos avisos por tus pantallas cuando las implementes.
-        '/HomeView': (context) => const _PantallaPendiente('Home'),
+        '/XXX': (context) => const _PantallaPendiente('XXX'),
       },
       initialRoute: '/SplashView',
     );

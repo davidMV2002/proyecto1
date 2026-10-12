@@ -24,7 +24,8 @@ class Registroview extends StatelessWidget {
         );
 
         if (credencial.user != null && miContext.mounted) {
-          Navigator.popAndPushNamed(miContext, "/SplashView");
+          // La cuenta acaba de crearse y todavía necesita su perfil.
+          Navigator.popAndPushNamed(miContext, "/CreatePerfilView");
         }
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
@@ -52,7 +53,7 @@ class Registroview extends StatelessWidget {
           ),
           TextField(
             controller: userController,
-            decoration: InputDecoration(hintText: "Usuario"),
+            decoration: InputDecoration(hintText: "Email"),
           ),
           TextField(
             obscureText: true,

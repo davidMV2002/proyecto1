@@ -15,8 +15,8 @@ class Perfil {
     final data = snapshot.data();
     return Perfil(
       uid: snapshot.id,
-      nombre: data?['name'] as String?,
-      edad: (data?['edad'] as num?)?.toInt(),
+      nombre: data?['Nombre'] as String?,
+      edad: (data?['Edad'] as num?)?.toInt(),
       deslizablesVistos: data?['deslizablesVistos'] == true,
     );
   }
@@ -24,8 +24,8 @@ class Perfil {
   Map<String, dynamic> toFirestore() {
     return {
       'deslizablesVistos': deslizablesVistos,
-      if (nombre != null) "name": nombre,
-      if (edad != null) "edad": edad,
+      if (nombre != null) "Nombre": nombre,
+      if (edad != null) "Edad": edad,
     };
   }
 }
