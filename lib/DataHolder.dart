@@ -5,4 +5,6 @@ class Dataholder {
   static final Dataholder instance = Dataholder._();
 
   late Perfil perfilUsuario;
+
+  int iBarIndex = 0;
 }
