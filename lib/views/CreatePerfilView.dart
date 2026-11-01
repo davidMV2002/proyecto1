@@ -14,7 +14,7 @@ class Createperfilview extends StatelessWidget {
 
   void funConfirmar() async {
     if (edadController.text.isNotEmpty) {
-      final perfiles = db.collection("Perfiles");
+      final perfiles = perfilesCollection(db);
       final perfil = new Perfil(
         uid: FirebaseAuth.instance.currentUser!.uid,
         nombre: nombreController.text,
@@ -22,7 +22,7 @@ class Createperfilview extends StatelessWidget {
         deslizablesVistos: false,
       );
       try {
-        await perfiles.doc(perfil.uid).set(perfil.toFirestore());
+        await perfiles.doc(perfil.uid).set(perfil);
         Dataholder.instance.perfilUsuario = perfil;
         if (!miContext.mounted) return;
         Navigator.popAndPushNamed(miContext, "/OnBoardingView");

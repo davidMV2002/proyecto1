@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../DataHolder.dart';
+import '../FbObjects/Perfil.dart';
 
 class Onboardingview extends StatefulWidget {
   const Onboardingview({super.key});
@@ -42,8 +43,7 @@ class _Onboardingview extends State<Onboardingview> {
         return;
       }
 
-      await FirebaseFirestore.instance
-          .collection('Perfiles')
+      await perfilesCollection(FirebaseFirestore.instance)
           .doc(usuario.uid)
           .update({'deslizablesVistos': true});
       Dataholder.instance.perfilUsuario.deslizablesVistos = true;

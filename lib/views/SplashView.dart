@@ -37,15 +37,14 @@ class _SplashViewState extends State<SplashView> {
       if (usuario == null) {
         ruta = '/LoginView';
       } else {
-        final documento = await FirebaseFirestore.instance
-            .collection('Perfiles')
+        final documento = await perfilesCollection(FirebaseFirestore.instance)
             .doc(usuario.uid)
             .get();
 
         if (!documento.exists) {
           ruta = '/CreatePerfilView';
         } else {
-          final perfil = Perfil.fromFirestore(documento, null);
+          final perfil = documento.data()!;
           Dataholder.instance.perfilUsuario = perfil;
 
           if (perfil.deslizablesVistos) {

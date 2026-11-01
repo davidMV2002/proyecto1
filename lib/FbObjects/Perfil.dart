@@ -29,3 +29,9 @@ class Perfil {
     };
   }
 }
+
+CollectionReference<Perfil> perfilesCollection(FirebaseFirestore firestore) =>
+    firestore.collection('Perfiles').withConverter<Perfil>(
+      fromFirestore: Perfil.fromFirestore,
+      toFirestore: (perfil, options) => perfil.toFirestore(),
+    );
