@@ -33,26 +33,16 @@ Home muestra un saludo con el nombre del perfil y un botón para cerrar sesión 
 
 ## Mapa y ubicación
 
-La pestaña **Mapa** muestra OpenStreetMap y los perfiles que hayan compartido su ubicación. Al abrirla, la app solicita la ubicación para centrar el mapa; leerla no la guarda. El botón **Compartir ubicación** pide confirmación antes de guardarla en el perfil, donde podrá verla quien tenga permiso para leer los perfiles. Al tocar un marcador se muestra el detalle disponible del perfil. El mapa puede mostrarse aunque se deniegue el permiso, con un centro predeterminado; la app ofrece reintentar si la ubicación no está disponible.
-
-La colección existente `Perfiles` guarda por cada usuario, en el documento identificado por su UID, los campos opcionales `ubicacion` (`GeoPoint`) y `fechaUbicacion` (`Timestamp` del servidor). No hace falta crear una colección ni añadir esos campos a mano: la aplicación los añade al compartir la ubicación. Los perfiles sin un `GeoPoint` válido no aparecen en el mapa. Para probar varios marcadores se necesitan varios perfiles que compartan su posición. Las reglas de Firestore deben permitir la lectura de perfiles a los usuarios previstos y permitir que cada usuario actualice solo su propio documento; compruébalas antes de usar datos reales.
+La pestaña **Mapa** muestra OpenStreetMap y la ubicación del propio usuario. Al abrirla, la app solicita permiso para obtener una posición puntual y centrar el mapa. La posición no se comparte ni se guarda en Firestore, y no se consultan ni muestran ubicaciones de otros perfiles. Si la ubicación no está disponible, el mapa conserva un centro predeterminado y permite reintentar.
 
 En Android se declaran permisos de ubicación aproximada y precisa, y en iOS la descripción del uso de ubicación en primer plano. En navegador se necesita un contexto seguro (HTTPS o localhost) y conceder el permiso del navegador. El mapa necesita conexión para descargar las teselas; si los servicios de ubicación están apagados, se deniega el permiso o se agota el tiempo de espera, se informa al usuario y se puede reintentar.
 
 ### Organización del código del mapa
 
-El código sigue la separación de responsabilidades del ejemplo del profesor, adaptada a los perfiles de esta aplicación:
+- `lib/views/mapa_view.dart` coordina la pantalla, muestra el mapa y la ubicación propia, y gestiona los controles y mensajes.
+- `lib/services/gps_admin.dart` comprueba el servicio y los permisos de ubicación y obtiene una posición puntual.
 
-- `lib/views/mapa_view.dart` coordina la pantalla, muestra el mapa y sus marcadores, y gestiona los controles y mensajes.
-- `lib/services/gps_admin.dart` comprueba el servicio y los permisos de ubicación y obtiene una posición puntual. Leer la posición no la comparte.
-- `lib/services/firebase_admin.dart` escucha los perfiles de Firestore y guarda la posición en el perfil propio cuando la persona confirma que quiere compartirla.
-- `lib/services/perfil_mapa.dart` define los datos de los perfiles que aparecen en el mapa; `lib/services/distancias_service.dart` calcula y ordena sus distancias para la lista de perfiles cercanos.
-
-A diferencia del ejemplo del profesor, esta aplicación usa la colección `Perfiles` y no consulta terremotos. Tampoco publica continuamente el GPS: la posición se guarda únicamente tras pulsar **Compartir ubicación** y confirmar la acción.
-
-### Distancias y concurrencia
-
-La lista de perfiles cercanos calcula la distancia en línea recta respecto a la posición obtenida. En Android y otras plataformas nativas el cálculo y la ordenación por distancia se ejecutan en un isolate, que comunica el progreso mediante mensajes. Calcular unas veinte distancias no exige un isolate: se usa aquí para practicar y medir la comunicación sin bloquear la interfaz. En web `Isolate.spawn` no está disponible; el cálculo se realiza por lotes cediendo el control a la interfaz y la ordenación se hace en el hilo principal. La lectura de Firestore y la obtención de ubicación ya son operaciones asíncronas, por lo que no se trasladan al isolate.
+La pantalla no utiliza Firebase para mostrar la ubicación. No consulta terremotos ni perfiles de otras personas.
 
 ### Tecnologías de localización
 

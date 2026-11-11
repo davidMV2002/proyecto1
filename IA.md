@@ -5,3 +5,5 @@
 - 11/11/2026: se utilizó un asistente de IA para implementar y documentar el mapa con OpenStreetMap, la ubicación voluntaria de perfiles y el cálculo de distancias con comunicación de progreso. La verificación en dispositivos y con las reglas reales de Firestore sigue siendo necesaria.
 
 - 11/11/2026: se utilizó un asistente de IA para comparar la organización del mapa con el ejemplo del profesor y separar las responsabilidades de ubicación y Firestore, conservando la confirmación antes de compartir la ubicación.
+
+- 11/11/2026: se utilizó un asistente de IA para adaptar el mapa a la ubicación propia, eliminando de la pantalla la consulta y publicación de ubicaciones de perfiles.
