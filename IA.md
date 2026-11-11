@@ -17,3 +17,5 @@
 - 11/11/2026: se utilizó un asistente de IA para añadir la edición del nombre y el borrado confirmado de la foto del perfil, y para calcular la distancia desde la ubicación propia a la capital seleccionada. Estas acciones no borran el documento del perfil ni implementan una lista de capitales cercanas.
 
 - 11/11/2026: se utilizó un asistente de IA para añadir la lista de capitales ordenadas por distancia y documentar el cálculo y su progreso. La ubicación permanece en el dispositivo.
+
+- 11/11/2026: se utilizó un asistente de IA para corregir la espera indefinida de la lista de capitales cercanas cuando el mapa ya había recibido los datos, y preparar una prueba de regresión.

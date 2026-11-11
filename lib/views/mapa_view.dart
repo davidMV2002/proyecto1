@@ -152,13 +152,14 @@ class _MapaViewState extends State<MapaView> {
     );
   }
 
-  Future<void> _mostrarCercanas() async {
+  Future<void> _mostrarCercanas(List<Capital>? capitalesActuales) async {
     final capital = await showModalBottomSheet<Capital>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (_) => _ListaCapitalesCercanas(
-        capitales: _capitales,
+      builder: (_) => ListaCapitalesCercanas(
+        capitales: _capitalesService.observarCapitales(),
+        capitalesIniciales: capitalesActuales,
         posicionInicial: _posicion,
         obtenerPosicion: () async {
           await _localizar();
@@ -284,7 +285,7 @@ class _MapaViewState extends State<MapaView> {
                 left: 16,
                 bottom: 44,
                 child: FilledButton.icon(
-                  onPressed: _mostrarCercanas,
+                  onPressed: () => _mostrarCercanas(snapshot.data),
                   icon: const Icon(Icons.near_me_outlined),
                   label: const Text('Cerca de mí'),
                 ),
@@ -360,8 +361,10 @@ class _AvisoMapa extends StatelessWidget {
   );
 }
 
-class _ListaCapitalesCercanas extends StatefulWidget {
-  const _ListaCapitalesCercanas({
+class ListaCapitalesCercanas extends StatefulWidget {
+  const ListaCapitalesCercanas({
+    super.key,
+    this.capitalesIniciales,
     required this.capitales,
     required this.posicionInicial,
     required this.obtenerPosicion,
@@ -369,16 +372,16 @@ class _ListaCapitalesCercanas extends StatefulWidget {
   });
 
   final Stream<List<Capital>> capitales;
+  final List<Capital>? capitalesIniciales;
   final Position? posicionInicial;
   final Future<Position?> Function() obtenerPosicion;
   final String? Function() mensajeUbicacion;
 
   @override
-  State<_ListaCapitalesCercanas> createState() =>
-      _ListaCapitalesCercanasState();
+  State<ListaCapitalesCercanas> createState() => _ListaCapitalesCercanasState();
 }
 
-class _ListaCapitalesCercanasState extends State<_ListaCapitalesCercanas> {
+class _ListaCapitalesCercanasState extends State<ListaCapitalesCercanas> {
   final _servicio = CapitalesCercanasService();
   StreamSubscription<List<Capital>>? _suscripcion;
   List<Capital>? _capitales;
@@ -395,6 +398,7 @@ class _ListaCapitalesCercanasState extends State<_ListaCapitalesCercanas> {
   void initState() {
     super.initState();
     _posicion = widget.posicionInicial;
+    _capitales = widget.capitalesIniciales;
     _suscripcion = widget.capitales.listen(
       (capitales) {
         if (!mounted) return;
@@ -409,11 +413,14 @@ class _ListaCapitalesCercanasState extends State<_ListaCapitalesCercanas> {
         setState(() => _errorCapitales = true);
       },
     );
-    if (_posicion == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _buscarUbicacion();
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_posicion == null) {
+        _buscarUbicacion();
+      } else if (_capitales != null && _resultados == null && !_calculando) {
+        _calcular();
+      }
+    });
   }
 
   @override
