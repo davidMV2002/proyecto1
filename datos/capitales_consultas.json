@@ -1,0 +1,167 @@
+{
+  "descripcion": "Poblaciones del municipio o entidad representada en Wikidata; los años y límites administrativos varían. Bruselas es el municipio, no la región; Londres corresponde a Greater London y Ámsterdam incluye Weesp. Datos recuperados para uso educativo, no son una serie estadística homogénea.",
+  "fuenteZona": "https://unstats.un.org/unsd/methodology/m49/",
+  "fechaAnadidaOrigen": "createTime de los documentos de Firestore existentes",
+  "capitales": [
+    {
+      "id": "madrid",
+      "zona": "Sur",
+      "poblacion": 3506730,
+      "anioPoblacion": 2025,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q2807#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "lisboa",
+      "zona": "Sur",
+      "poblacion": 545796,
+      "anioPoblacion": 2021,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q597#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "paris",
+      "zona": "Oeste",
+      "poblacion": 2103778,
+      "anioPoblacion": 2023,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q90#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "roma",
+      "zona": "Sur",
+      "poblacion": 2748109,
+      "anioPoblacion": 2023,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q220#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "berlin",
+      "zona": "Oeste",
+      "poblacion": 3913644,
+      "anioPoblacion": 2025,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q64#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "londres",
+      "zona": "Norte",
+      "poblacion": 8799728,
+      "anioPoblacion": 2021,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q84#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "dublin",
+      "zona": "Norte",
+      "poblacion": 592713,
+      "anioPoblacion": 2022,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q1761#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "bruselas",
+      "zona": "Oeste",
+      "poblacion": 195546,
+      "anioPoblacion": 2024,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q239#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "amsterdam",
+      "zona": "Oeste",
+      "poblacion": 917923,
+      "anioPoblacion": 2022,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q9899#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "luxemburgo",
+      "zona": "Oeste",
+      "poblacion": 137678,
+      "anioPoblacion": 2026,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q1842#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "berna",
+      "zona": "Oeste",
+      "poblacion": 138562,
+      "anioPoblacion": 2025,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q70#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "viena",
+      "zona": "Oeste",
+      "poblacion": 2028289,
+      "anioPoblacion": 2025,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q1741#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "praga",
+      "zona": "Este",
+      "poblacion": 1397880,
+      "anioPoblacion": 2025,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q1085#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "varsovia",
+      "zona": "Este",
+      "poblacion": 1862402,
+      "anioPoblacion": 2024,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q270#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "budapest",
+      "zona": "Este",
+      "poblacion": 1675777,
+      "anioPoblacion": 2026,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q1781#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "copenhague",
+      "zona": "Norte",
+      "poblacion": 667099,
+      "anioPoblacion": 2025,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q1748#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "oslo",
+      "zona": "Norte",
+      "poblacion": 717710,
+      "anioPoblacion": 2024,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q585#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "estocolmo",
+      "zona": "Norte",
+      "poblacion": 984748,
+      "anioPoblacion": 2022,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q1754#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "helsinki",
+      "zona": "Norte",
+      "poblacion": 694392,
+      "anioPoblacion": 2025,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q1757#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    },
+    {
+      "id": "atenas",
+      "zona": "Sur",
+      "poblacion": 643452,
+      "anioPoblacion": 2021,
+      "fuentePoblacion": "https://www.wikidata.org/wiki/Q1524#P1082",
+      "fechaAnadida": "2026-11-11T11:48:55.901188Z"
+    }
+  ]
+}

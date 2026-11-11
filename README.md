@@ -29,7 +29,7 @@ La configuración de Firebase identifica el proyecto; no incluyas contraseñas, 
 
 La bienvenida tiene tres páginas deslizables y los botones **Siguiente**, **Omitir** y **Comenzar**. Al omitirla o completarla, se guarda `deslizablesVistos: true` en `Perfiles/{uid}` y se abre Home. Así no vuelve a mostrarse para ese perfil en los siguientes accesos. Si el campo no existe, la bienvenida se considera pendiente.
 
-Home muestra un saludo con el nombre del perfil y un botón para cerrar sesión y volver al login. Su barra inferior incluye **Principal**, **Mapa**, **Notificaciones** y **Perfil**.
+Home muestra un saludo con el nombre del perfil y un botón para cerrar sesión y volver al login. Su barra inferior incluye **Principal**, **Mapa**, **Capitales** y **Perfil**.
 
 ## Perfil y fotografía
 
@@ -56,8 +56,28 @@ La colección `Capitales` contiene un documento por capital, con estos campos:
 | `nombre` | `string` | `Madrid` |
 | `pais` | `string` | `España` |
 | `ubicacion` | `GeoPoint` | latitud `40.4168`, longitud `-3.7038` |
+| `zona` | `string` | `Sur` |
+| `poblacion` | `number` (entero) | población de referencia de la ciudad |
+| `anioPoblacion` | `number` (entero) | año de la cifra de población |
+| `fuentePoblacion` | `string` | enlace a la fuente de la cifra |
+| `fechaAnadida` | `Timestamp` | fecha de creación del documento |
 
 Se han cargado 20 capitales europeas como datos de ejemplo. La colección y sus documentos se pueden ampliar con esa misma estructura; los documentos sin los campos correctos se omiten. Las reglas de `firestore.rules`, ya desplegadas en este proyecto, permiten a usuarios autenticados leer `Capitales` y reservan la lectura y escritura de cada perfil a su propietario. La aplicación no puede modificar las capitales con estas reglas; su administración se realiza desde Firebase. La aplicación muestra un aviso y permite reintentar si no puede cargar las capitales. La ubicación propia se obtiene en el dispositivo y se guarda con su fecha en el perfil privado del usuario; no se muestra a otros usuarios.
+
+### Consultas de capitales
+
+La pestaña **Capitales** ofrece cuatro consultas a Firestore:
+
+1. **Zona y población:** combina `where` de igualdad para la zona y una población mínima.
+2. **Más pobladas:** ordena por población descendente y limita el resultado a diez.
+3. **Por fechas:** filtra `fechaAnadida` por un intervalo que incluye ambos días elegidos en la zona horaria del dispositivo. Es la fecha de incorporación de la capital a la aplicación, no una fecha histórica de la ciudad.
+4. **Todas:** ordena alfabéticamente, carga diez documentos por página y utiliza `startAfterDocument` para continuar desde el último resultado.
+
+Cada consulta se ejecuta con `get()` al seleccionarla o actualizar sus filtros: se necesita una instantánea puntual, no una escucha continua. La vista del mapa usa `snapshots()` por separado para actualizar los marcadores mientras está abierta. El índice compuesto de zona y población se declara en `firestore.indexes.json`; para desplegarlo en el proyecto configurado se usa `firebase deploy --only firestore:indexes`. Si el índice se acaba de crear, Firestore puede necesitar tiempo para terminar de construirlo.
+
+Las consultas por población y fecha requieren que los documentos tengan los campos correspondientes; Firestore no incluye los documentos que carecen del campo por el que se filtra u ordena.
+
+Las zonas siguen la clasificación geográfica [M49 de la ONU](https://unstats.un.org/unsd/methodology/m49/). Las poblaciones proceden de Wikidata (propiedad P1082) y su año y enlace individual constan en `datos/capitales_consultas.json`. Son datos educativos de años distintos y de entidades con límites administrativos distintos, por lo que las cifras no constituyen una serie estadística homogénea. `fechaAnadida` conserva la fecha de creación real de cada documento; las 20 capitales iniciales se crearon el mismo día.
 
 ### Capitales cerca de mí
 
@@ -82,4 +102,3 @@ El GPS usa señales de satélites: ofrece buena precisión en exteriores, aunque
 ## Pendiente de completar
 
 - Añadir las fotos de bienvenida; por ahora se muestran iconos en su lugar.
-- Implementar Notificaciones: actualmente muestra un aviso de que está pendiente.

@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "Capitales",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "zona", "order": "ASCENDING"},
+        {"fieldPath": "poblacion", "order": "ASCENDING"}
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

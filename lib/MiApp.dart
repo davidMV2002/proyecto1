@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto1/views/CreatePerfilView.dart';
+import 'package:proyecto1/views/CapitalesView.dart';
 import 'package:proyecto1/views/HomeView.dart';
 import 'package:proyecto1/views/LoginView.dart';
 import 'package:proyecto1/views/PerfilView.dart';
@@ -23,6 +24,7 @@ class Miapp extends StatelessWidget {
         '/CreatePerfilView': (context) => Createperfilview(),
         '/HomeView': (context) => Homeview(),
         '/MapaView': (context) => const MapaView(),
+        '/CapitalesView': (context) => const CapitalesView(),
         '/PerfilView': (context) => const PerfilView(),
         // Sustituye estos avisos por tus pantallas cuando las implementes.
         '/XXX': (context) => const _PantallaPendiente('XXX'),

@@ -16,9 +16,7 @@ class Botbarstyle extends StatelessWidget {
         case 1:
           Navigator.pushReplacementNamed(context, '/MapaView');
         case 2:
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Notificaciones próximamente.')),
-          );
+          Navigator.pushReplacementNamed(context, '/CapitalesView');
         case 3:
           Navigator.pushReplacementNamed(context, '/PerfilView');
       }
@@ -27,8 +25,8 @@ class Botbarstyle extends StatelessWidget {
       NavigationDestination(icon: Icon(Icons.home), label: 'Principal'),
       NavigationDestination(icon: Icon(Icons.map_outlined), label: 'Mapa'),
       NavigationDestination(
-        icon: Icon(Icons.notifications_outlined),
-        label: 'Notificaciones',
+        icon: Icon(Icons.location_city_outlined),
+        label: 'Capitales',
       ),
       NavigationDestination(icon: Icon(Icons.person_outline), label: 'Perfil'),
     ],
