@@ -1,3 +1,5 @@
 # Bitácora de uso de IA
 
 - 11/11/2026: se utilizó un asistente de IA para ayudar a implementar y documentar el acceso con Google en Android y navegador, junto con la creación o recuperación del perfil en Firestore. La integración debe probarse con la configuración real de Firebase antes de darla por verificada.
+
+- 11/11/2026: se utilizó un asistente de IA para implementar y documentar el mapa con OpenStreetMap, la ubicación voluntaria de perfiles y el cálculo de distancias con comunicación de progreso. La verificación en dispositivos y con las reglas reales de Firestore sigue siendo necesaria.

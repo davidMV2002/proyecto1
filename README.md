@@ -29,10 +29,26 @@ La configuración de Firebase identifica el proyecto; no incluyas contraseñas, 
 
 La bienvenida tiene tres páginas deslizables y los botones **Siguiente**, **Omitir** y **Comenzar**. Al omitirla o completarla, se guarda `deslizablesVistos: true` en `Perfiles/{uid}` y se abre Home. Así no vuelve a mostrarse para ese perfil en los siguientes accesos. Si el campo no existe, la bienvenida se considera pendiente.
 
-Home muestra un saludo con el nombre del perfil y un botón para cerrar sesión y volver al login. Su barra inferior incluye **Principal**, **Notificaciones** y **Mensajes**.
+Home muestra un saludo con el nombre del perfil y un botón para cerrar sesión y volver al login. Su barra inferior incluye **Principal**, **Mapa**, **Notificaciones** y **Mensajes**.
+
+## Mapa y ubicación
+
+La pestaña **Mapa** muestra OpenStreetMap y los perfiles que hayan compartido su ubicación. Al abrirla, la app solicita la ubicación para centrar el mapa; leerla no la guarda. El botón **Compartir ubicación** pide confirmación antes de guardarla en el perfil, donde podrá verla quien tenga permiso para leer los perfiles. Al tocar un marcador se muestra el detalle disponible del perfil. El mapa puede mostrarse aunque se deniegue el permiso, con un centro predeterminado; la app ofrece reintentar si la ubicación no está disponible.
+
+La colección existente `Perfiles` guarda por cada usuario, en el documento identificado por su UID, los campos opcionales `ubicacion` (`GeoPoint`) y `fechaUbicacion` (`Timestamp` del servidor). No hace falta crear una colección ni añadir esos campos a mano: la aplicación los añade al compartir la ubicación. Los perfiles sin un `GeoPoint` válido no aparecen en el mapa. Para probar varios marcadores se necesitan varios perfiles que compartan su posición. Las reglas de Firestore deben permitir la lectura de perfiles a los usuarios previstos y permitir que cada usuario actualice solo su propio documento; compruébalas antes de usar datos reales.
+
+En Android se declaran permisos de ubicación aproximada y precisa, y en iOS la descripción del uso de ubicación en primer plano. En navegador se necesita un contexto seguro (HTTPS o localhost) y conceder el permiso del navegador. El mapa necesita conexión para descargar las teselas; si los servicios de ubicación están apagados, se deniega el permiso o se agota el tiempo de espera, se informa al usuario y se puede reintentar.
+
+### Distancias y concurrencia
+
+La lista de perfiles cercanos calcula la distancia en línea recta respecto a la posición obtenida. En Android y otras plataformas nativas el cálculo y la ordenación por distancia se ejecutan en un isolate, que comunica el progreso mediante mensajes. Calcular unas veinte distancias no exige un isolate: se usa aquí para practicar y medir la comunicación sin bloquear la interfaz. En web `Isolate.spawn` no está disponible; el cálculo se realiza por lotes cediendo el control a la interfaz y la ordenación se hace en el hilo principal. La lectura de Firestore y la obtención de ubicación ya son operaciones asíncronas, por lo que no se trasladan al isolate.
+
+### Tecnologías de localización
+
+El GPS usa señales de satélites: ofrece buena precisión en exteriores, aunque puede tardar en obtener una posición, consumir más batería y funcionar peor en interiores. La localización por red utiliza antenas móviles o redes Wi-Fi: suele responder rápido y funcionar mejor en interiores, pero depende de la cobertura y normalmente es menos precisa. El proveedor combinado del dispositivo utiliza las fuentes disponibles, junto con otros sensores cuando corresponde, para equilibrar precisión, tiempo de respuesta y consumo. La precisión real depende del entorno, el dispositivo y el permiso concedido; conviene usar la precisión necesaria para la tarea y evitar lecturas continuas cuando basta una posición puntual, como en este mapa.
 
 ## Pendiente de completar
 
 - Añadir las fotos de bienvenida; por ahora se muestran iconos en su lugar.
-- Implementar Notificaciones: actualmente solo escribe «PROXIMAMENTE» en la consola.
+- Implementar Notificaciones: actualmente muestra un aviso de que está pendiente.
 - Implementar Mensajes: actualmente abre una pantalla temporal en la ruta `/XXX`.
