@@ -33,16 +33,29 @@ Home muestra un saludo con el nombre del perfil y un botón para cerrar sesión 
 
 ## Mapa y ubicación
 
-La pestaña **Mapa** muestra OpenStreetMap y la ubicación del propio usuario. Al abrirla, la app solicita permiso para obtener una posición puntual y centrar el mapa. La posición no se comparte ni se guarda en Firestore, y no se consultan ni muestran ubicaciones de otros perfiles. Si la ubicación no está disponible, el mapa conserva un centro predeterminado y permite reintentar.
+La pestaña **Mapa** muestra OpenStreetMap, la ubicación del propio usuario y marcadores de capitales cargados desde Firestore. Al tocar un marcador se muestra el nombre de la capital y su país. Al abrirla, la app solicita permiso para obtener una posición puntual y centrar el mapa. La posición no se comparte ni se guarda en Firestore, y no se consultan ni muestran ubicaciones de otros perfiles. Si la ubicación no está disponible, el mapa conserva un centro predeterminado y permite reintentar.
 
 En Android se declaran permisos de ubicación aproximada y precisa, y en iOS la descripción del uso de ubicación en primer plano. En navegador se necesita un contexto seguro (HTTPS o localhost) y conceder el permiso del navegador. El mapa necesita conexión para descargar las teselas; si los servicios de ubicación están apagados, se deniega el permiso o se agota el tiempo de espera, se informa al usuario y se puede reintentar.
+
+### Capitales en Firestore
+
+La colección `Capitales` contiene un documento por capital, con estos campos:
+
+| Campo | Tipo Firestore | Ejemplo |
+| --- | --- | --- |
+| `nombre` | `string` | `Madrid` |
+| `pais` | `string` | `España` |
+| `ubicacion` | `GeoPoint` | latitud `40.4168`, longitud `-3.7038` |
+
+Se han cargado 20 capitales europeas como datos de ejemplo. La colección y sus documentos se pueden ampliar con esa misma estructura; los documentos sin los campos correctos se omiten. Las reglas de `firestore.rules`, ya desplegadas en este proyecto, permiten a usuarios autenticados leer `Capitales` y reservan la lectura y escritura de cada perfil a su propietario. La aplicación no puede modificar las capitales con estas reglas; su administración se realiza desde Firebase. La aplicación muestra un aviso y permite reintentar si no puede cargar las capitales. La ubicación propia se obtiene en el dispositivo y no se guarda ni comparte.
 
 ### Organización del código del mapa
 
 - `lib/views/mapa_view.dart` coordina la pantalla, muestra el mapa y la ubicación propia, y gestiona los controles y mensajes.
 - `lib/services/gps_admin.dart` comprueba el servicio y los permisos de ubicación y obtiene una posición puntual.
+- `lib/services/capitales_service.dart` lee las capitales de Firestore y convierte los documentos válidos para mostrarlos en el mapa.
 
-La pantalla no utiliza Firebase para mostrar la ubicación. No consulta terremotos ni perfiles de otras personas.
+La pantalla usa Firebase para leer las capitales, pero no para mostrar ni guardar la ubicación propia. No consulta terremotos ni ubicaciones de perfiles de otras personas.
 
 ### Tecnologías de localización
 

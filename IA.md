@@ -7,3 +7,5 @@
 - 11/11/2026: se utilizó un asistente de IA para comparar la organización del mapa con el ejemplo del profesor y separar las responsabilidades de ubicación y Firestore, conservando la confirmación antes de compartir la ubicación.
 
 - 11/11/2026: se utilizó un asistente de IA para adaptar el mapa a la ubicación propia, eliminando de la pantalla la consulta y publicación de ubicaciones de perfiles.
+
+- 11/11/2026: se utilizó un asistente de IA para añadir marcadores de capitales cargados desde Firestore, documentar la estructura de la colección y cargar 20 capitales de ejemplo. La lectura depende de las reglas de Firestore.
