@@ -43,7 +43,7 @@ En iOS se declaran los motivos para utilizar la cámara y la fototeca. Android u
 
 ## Mapa y ubicación
 
-La pestaña **Mapa** muestra OpenStreetMap, la ubicación del propio usuario y marcadores de capitales cargados desde Firestore. Al tocar un marcador se muestra el nombre de la capital, su país y la distancia en línea recta desde la última posición obtenida del usuario. Si no se dispone de la ubicación, se informa al usuario y se ofrece obtenerla. Al abrirla, la app solicita permiso para obtener una posición puntual y centrar el mapa. La posición no se comparte ni se guarda en Firestore, y no se consultan ni muestran ubicaciones de otros perfiles. Si la ubicación no está disponible, el mapa conserva un centro predeterminado y permite reintentar.
+La pestaña **Mapa** muestra OpenStreetMap, la ubicación del propio usuario y marcadores de capitales cargados desde Firestore. Al tocar un marcador se muestra el nombre de la capital, su país y la distancia en línea recta desde la última posición obtenida del usuario. Si no se dispone de la ubicación, se informa al usuario y se ofrece obtenerla. Al abrirla, la app solicita permiso para obtener una posición puntual y centrar el mapa. Cuando se obtiene la posición, se intenta guardar en el perfil propio de Firestore como `ubicacion` (`GeoPoint`) y `fechaUbicacion` (`Timestamp` del servidor). Las reglas actuales solo permiten al propietario leer o modificar su perfil; no se consultan ni muestran ubicaciones de otros perfiles. Si el guardado falla, se informa y el mapa sigue funcionando con la posición obtenida en el dispositivo. Si la ubicación no está disponible, el mapa conserva un centro predeterminado y permite reintentar.
 
 En Android se declaran permisos de ubicación aproximada y precisa, y en iOS la descripción del uso de ubicación en primer plano. En navegador se necesita un contexto seguro (HTTPS o localhost) y conceder el permiso del navegador. El mapa necesita conexión para descargar las teselas; si los servicios de ubicación están apagados, se deniega el permiso o se agota el tiempo de espera, se informa al usuario y se puede reintentar.
 
@@ -57,11 +57,11 @@ La colección `Capitales` contiene un documento por capital, con estos campos:
 | `pais` | `string` | `España` |
 | `ubicacion` | `GeoPoint` | latitud `40.4168`, longitud `-3.7038` |
 
-Se han cargado 20 capitales europeas como datos de ejemplo. La colección y sus documentos se pueden ampliar con esa misma estructura; los documentos sin los campos correctos se omiten. Las reglas de `firestore.rules`, ya desplegadas en este proyecto, permiten a usuarios autenticados leer `Capitales` y reservan la lectura y escritura de cada perfil a su propietario. La aplicación no puede modificar las capitales con estas reglas; su administración se realiza desde Firebase. La aplicación muestra un aviso y permite reintentar si no puede cargar las capitales. La ubicación propia se obtiene en el dispositivo y no se guarda ni comparte.
+Se han cargado 20 capitales europeas como datos de ejemplo. La colección y sus documentos se pueden ampliar con esa misma estructura; los documentos sin los campos correctos se omiten. Las reglas de `firestore.rules`, ya desplegadas en este proyecto, permiten a usuarios autenticados leer `Capitales` y reservan la lectura y escritura de cada perfil a su propietario. La aplicación no puede modificar las capitales con estas reglas; su administración se realiza desde Firebase. La aplicación muestra un aviso y permite reintentar si no puede cargar las capitales. La ubicación propia se obtiene en el dispositivo y se guarda con su fecha en el perfil privado del usuario; no se muestra a otros usuarios.
 
 ### Capitales cerca de mí
 
-La lista **Capitales cerca de mí** muestra las capitales ordenadas por distancia en línea recta desde la última ubicación obtenida en el dispositivo. Cada resultado indica la distancia y permite abrir el detalle de la capital. Si no se dispone de ubicación, es necesario conceder permiso y volver a intentarlo. La ubicación propia no se guarda ni se comparte.
+La lista **Capitales cerca de mí** muestra las capitales ordenadas por distancia en línea recta desde la última ubicación obtenida en el dispositivo. Cada resultado indica la distancia y permite abrir el detalle de la capital. Si no se dispone de ubicación, es necesario conceder permiso y volver a intentarlo. La posición usada para ordenar también se guarda, junto con su fecha, en el perfil privado del usuario; no se muestra a otros usuarios.
 
 La aplicación escucha la colección `Capitales` con `snapshots()`: así puede actualizar el mapa y la lista si los documentos cambian mientras están abiertos. La distancia se calcula y la lista se ordena en el dispositivo, a partir de esas capitales y de la posición local; Firestore no realiza una consulta ordenada por distancia. Por tanto, esta lista no sustituye las cuatro consultas específicas requeridas por la práctica.
 
@@ -73,7 +73,7 @@ En Android e iOS, el cálculo y la ordenación se ejecutan en un isolate que com
 - `lib/services/gps_admin.dart` comprueba el servicio y los permisos de ubicación, obtiene una posición puntual y calcula la distancia hasta una capital mediante `Geolocator.distanceBetween`, en metros o kilómetros.
 - `lib/services/capitales_service.dart` lee las capitales de Firestore y convierte los documentos válidos para mostrarlos en el mapa.
 
-La pantalla usa Firebase para leer las capitales, pero no para mostrar ni guardar la ubicación propia. No consulta terremotos ni ubicaciones de perfiles de otras personas.
+La pantalla usa Firebase para leer las capitales y guardar en el perfil privado la posición propia y su fecha. No consulta terremotos ni ubicaciones de perfiles de otras personas.
 
 ### Tecnologías de localización
 

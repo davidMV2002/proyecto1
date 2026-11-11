@@ -5,6 +5,8 @@ class Perfil {
   String? nombre;
   int? edad;
   String? fotoBase64;
+  GeoPoint? ubicacion;
+  Timestamp? fechaUbicacion;
   bool deslizablesVistos;
 
   Perfil({
@@ -12,6 +14,8 @@ class Perfil {
     this.nombre,
     this.edad,
     this.fotoBase64,
+    this.ubicacion,
+    this.fechaUbicacion,
     this.deslizablesVistos = false,
   });
 
@@ -19,12 +23,21 @@ class Perfil {
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
   ) {
-    final data = snapshot.data();
+    return Perfil.fromData(snapshot.id, snapshot.data());
+  }
+
+  factory Perfil.fromData(String uid, Map<String, dynamic>? data) {
     return Perfil(
-      uid: snapshot.id,
+      uid: uid,
       nombre: data?['Nombre'] as String?,
       edad: (data?['Edad'] as num?)?.toInt(),
       fotoBase64: data?['fotoBase64'] as String?,
+      ubicacion: data?['ubicacion'] is GeoPoint
+          ? data!['ubicacion'] as GeoPoint
+          : null,
+      fechaUbicacion: data?['fechaUbicacion'] is Timestamp
+          ? data!['fechaUbicacion'] as Timestamp
+          : null,
       deslizablesVistos: data?['deslizablesVistos'] == true,
     );
   }
@@ -35,6 +48,8 @@ class Perfil {
       if (nombre != null) "Nombre": nombre,
       if (edad != null) "Edad": edad,
       if (fotoBase64 != null) 'fotoBase64': fotoBase64,
+      if (ubicacion != null) 'ubicacion': ubicacion,
+      if (fechaUbicacion != null) 'fechaUbicacion': fechaUbicacion,
     };
   }
 }

@@ -63,6 +63,7 @@ class _MapaViewState extends State<MapaView> {
       if (!mounted) return;
       setState(() => _posicion = posicion);
       _controlador.move(LatLng(posicion.latitude, posicion.longitude), 13);
+      unawaited(_guardarPosicion(posicion));
     } on UbicacionException catch (error) {
       if (mounted) setState(() => _errorUbicacion = error.mensaje);
     } catch (_) {
@@ -71,6 +72,23 @@ class _MapaViewState extends State<MapaView> {
       }
     } finally {
       if (mounted) setState(() => _buscando = false);
+    }
+  }
+
+  Future<void> _guardarPosicion(Position posicion) async {
+    try {
+      await _gpsAdmin
+          .guardarUbicacion(posicion)
+          .timeout(const Duration(seconds: 10));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No se pudo confirmar el guardado de tu ubicación. Comprueba la conexión.',
+          ),
+        ),
+      );
     }
   }
 

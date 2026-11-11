@@ -19,3 +19,5 @@
 - 11/11/2026: se utilizó un asistente de IA para añadir la lista de capitales ordenadas por distancia y documentar el cálculo y su progreso. La ubicación permanece en el dispositivo.
 
 - 11/11/2026: se utilizó un asistente de IA para corregir la espera indefinida de la lista de capitales cercanas cuando el mapa ya había recibido los datos, y preparar una prueba de regresión.
+
+- 11/11/2026: se utilizó un asistente de IA para guardar la ubicación y su fecha en el perfil privado, conservando el funcionamiento del mapa si falla la escritura.
