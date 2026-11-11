@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../DataHolder.dart';
 import '../insLib/BotBarStyle.dart';
 import '../services/foto_perfil_service.dart';
 
@@ -88,6 +89,110 @@ class _PerfilViewState extends State<PerfilView> {
       ),
     );
     if (origen != null && mounted) await _seleccionar(origen);
+  }
+
+  Future<void> _editarNombre(String nombreActual) async {
+    if (_guardando || _usuario == null) return;
+    final controlador = TextEditingController(text: nombreActual);
+    final formulario = GlobalKey<FormState>();
+    final nombre = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Editar nombre'),
+        content: Form(
+          key: formulario,
+          child: TextFormField(
+            controller: controlador,
+            autofocus: true,
+            textCapitalization: TextCapitalization.words,
+            maxLength: 100,
+            decoration: const InputDecoration(labelText: 'Nombre'),
+            validator: (valor) => valor == null || valor.trim().isEmpty
+                ? 'Escribe tu nombre.'
+                : null,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (formulario.currentState!.validate()) {
+                Navigator.pop(context, controlador.text.trim());
+              }
+            },
+            child: const Text('Guardar'),
+          ),
+        ],
+      ),
+    );
+    controlador.dispose();
+    if (!mounted || nombre == null || nombre == nombreActual) return;
+    setState(() => _guardando = true);
+    try {
+      await FirebaseFirestore.instance
+          .collection('Perfiles')
+          .doc(_usuario.uid)
+          .update({'Nombre': nombre});
+      Dataholder.instance.perfilUsuario.nombre = nombre;
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Nombre actualizado.')));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No se pudo guardar el nombre. Inténtalo de nuevo.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _guardando = false);
+    }
+  }
+
+  Future<void> _borrarFoto() async {
+    if (_guardando || _usuario == null) return;
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar foto'),
+        content: const Text('¿Quieres eliminar tu foto de perfil?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || confirmar != true) return;
+    setState(() => _guardando = true);
+    try {
+      await FirebaseFirestore.instance
+          .collection('Perfiles')
+          .doc(_usuario.uid)
+          .update({'fotoBase64': FieldValue.delete()});
+      Dataholder.instance.perfilUsuario.fotoBase64 = null;
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Foto de perfil eliminada.')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No se pudo eliminar la foto. Inténtalo de nuevo.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _guardando = false);
+    }
   }
 
   Uint8List? _decodificarFoto(Object? dato) {
@@ -186,12 +291,19 @@ class _PerfilViewState extends State<PerfilView> {
                                 foto == null ? 'Añadir foto' : 'Cambiar foto',
                               ),
                             ),
+                            if (fotoGuardada is String &&
+                                fotoGuardada.isNotEmpty)
+                              TextButton.icon(
+                                onPressed: _guardando ? null : _borrarFoto,
+                                icon: const Icon(Icons.delete_outline),
+                                label: const Text('Eliminar foto'),
+                              ),
                             if (_guardando) ...[
                               const SizedBox(height: 16),
                               const LinearProgressIndicator(),
                               const SizedBox(height: 8),
                               const Text(
-                                'Preparando y guardando la foto…',
+                                'Guardando cambios…',
                                 textAlign: TextAlign.center,
                               ),
                             ],
@@ -207,6 +319,15 @@ class _PerfilViewState extends State<PerfilView> {
                                               nombre.trim().isNotEmpty
                                           ? nombre
                                           : 'Sin indicar',
+                                    ),
+                                    trailing: IconButton(
+                                      tooltip: 'Editar nombre',
+                                      onPressed: _guardando
+                                          ? null
+                                          : () => _editarNombre(
+                                              nombre is String ? nombre : '',
+                                            ),
+                                      icon: const Icon(Icons.edit_outlined),
                                     ),
                                   ),
                                   const Divider(height: 1),

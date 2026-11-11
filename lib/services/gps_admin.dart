@@ -14,6 +14,19 @@ class UbicacionException implements Exception {
 }
 
 class GPSAdmin {
+  /// Distancia en línea recta, en metros, entre dos coordenadas geográficas.
+  double distanciaEnMetros({
+    required double latitudOrigen,
+    required double longitudOrigen,
+    required double latitudDestino,
+    required double longitudDestino,
+  }) => Geolocator.distanceBetween(
+    latitudOrigen,
+    longitudOrigen,
+    latitudDestino,
+    longitudDestino,
+  );
+
   /// Pide permiso y lee la posición; no la guarda ni la comparte.
   Future<Position> obtenerUbicacion() async {
     try {

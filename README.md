@@ -33,7 +33,7 @@ Home muestra un saludo con el nombre del perfil y un botón para cerrar sesión 
 
 ## Perfil y fotografía
 
-La pestaña **Perfil** muestra el nombre y la edad del usuario que ha iniciado sesión y permite elegir una fotografía desde la cámara o la galería. Se informa si falla la selección, el permiso o el guardado; cancelar la selección no cambia la foto anterior.
+La pestaña **Perfil** muestra el nombre y la edad del usuario que ha iniciado sesión. Permite modificar el nombre (obligatorio, de hasta 100 caracteres) y añadir o cambiar la fotografía desde la cámara o la galería. También permite borrar la foto tras pedir confirmación; se elimina el campo de la foto del perfil, no el documento completo. Se informa si falla la selección, el permiso o el guardado; cancelar la selección no cambia la foto anterior.
 
 La fotografía se reduce y comprime como JPEG antes de codificarse en base64 y guardarse en el campo `fotoBase64` del documento `Perfiles/{uid}` en Firestore. Se guarda una miniatura de menos de 300 KiB en lugar del archivo original para mantener el documento por debajo del límite de tamaño de Firestore. Al mostrar la foto, la aplicación decodifica los datos guardados. La actualización solo modifica ese campo y conserva el resto del perfil.
 
@@ -43,7 +43,7 @@ En iOS se declaran los motivos para utilizar la cámara y la fototeca. Android u
 
 ## Mapa y ubicación
 
-La pestaña **Mapa** muestra OpenStreetMap, la ubicación del propio usuario y marcadores de capitales cargados desde Firestore. Al tocar un marcador se muestra el nombre de la capital y su país. Al abrirla, la app solicita permiso para obtener una posición puntual y centrar el mapa. La posición no se comparte ni se guarda en Firestore, y no se consultan ni muestran ubicaciones de otros perfiles. Si la ubicación no está disponible, el mapa conserva un centro predeterminado y permite reintentar.
+La pestaña **Mapa** muestra OpenStreetMap, la ubicación del propio usuario y marcadores de capitales cargados desde Firestore. Al tocar un marcador se muestra el nombre de la capital, su país y la distancia en línea recta desde la última posición obtenida del usuario. Si no se dispone de la ubicación, se informa al usuario y se ofrece obtenerla. Al abrirla, la app solicita permiso para obtener una posición puntual y centrar el mapa. La posición no se comparte ni se guarda en Firestore, y no se consultan ni muestran ubicaciones de otros perfiles. Si la ubicación no está disponible, el mapa conserva un centro predeterminado y permite reintentar.
 
 En Android se declaran permisos de ubicación aproximada y precisa, y en iOS la descripción del uso de ubicación en primer plano. En navegador se necesita un contexto seguro (HTTPS o localhost) y conceder el permiso del navegador. El mapa necesita conexión para descargar las teselas; si los servicios de ubicación están apagados, se deniega el permiso o se agota el tiempo de espera, se informa al usuario y se puede reintentar.
 
@@ -62,7 +62,7 @@ Se han cargado 20 capitales europeas como datos de ejemplo. La colección y sus 
 ### Organización del código del mapa
 
 - `lib/views/mapa_view.dart` coordina la pantalla, muestra el mapa y la ubicación propia, y gestiona los controles y mensajes.
-- `lib/services/gps_admin.dart` comprueba el servicio y los permisos de ubicación y obtiene una posición puntual.
+- `lib/services/gps_admin.dart` comprueba el servicio y los permisos de ubicación, obtiene una posición puntual y calcula la distancia hasta una capital mediante `Geolocator.distanceBetween`, en metros o kilómetros.
 - `lib/services/capitales_service.dart` lee las capitales de Firestore y convierte los documentos válidos para mostrarlos en el mapa.
 
 La pantalla usa Firebase para leer las capitales, pero no para mostrar ni guardar la ubicación propia. No consulta terremotos ni ubicaciones de perfiles de otras personas.

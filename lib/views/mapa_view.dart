@@ -23,6 +23,7 @@ class _MapaViewState extends State<MapaView> {
   static const _centroInicial = LatLng(40.4168, -3.7038);
   Position? _posicion;
   bool _buscando = false;
+  Future<void>? _localizacionEnCurso;
   String? _errorUbicacion;
 
   @override
@@ -40,8 +41,16 @@ class _MapaViewState extends State<MapaView> {
     super.dispose();
   }
 
-  Future<void> _localizar() async {
-    if (_buscando) return;
+  Future<void> _localizar() {
+    final activa = _localizacionEnCurso;
+    if (activa != null) return activa;
+    final tarea = _ejecutarLocalizacion();
+    _localizacionEnCurso = tarea;
+    tarea.whenComplete(() => _localizacionEnCurso = null);
+    return tarea;
+  }
+
+  Future<void> _ejecutarLocalizacion() async {
     setState(() {
       _buscando = true;
       _errorUbicacion = null;
@@ -63,33 +72,79 @@ class _MapaViewState extends State<MapaView> {
   }
 
   void _mostrarCapital(Capital capital) {
+    var reintentando = false;
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                capital.nombre,
-                style: Theme.of(context).textTheme.headlineSmall,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (sheetContext, actualizarDetalle) {
+          final posicion = _posicion;
+          final distancia = posicion == null
+              ? null
+              : _gpsAdmin.distanciaEnMetros(
+                  latitudOrigen: posicion.latitude,
+                  longitudOrigen: posicion.longitude,
+                  latitudDestino: capital.ubicacion.latitude,
+                  longitudDestino: capital.ubicacion.longitude,
+                );
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    capital.nombre,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    capital.pais,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 16),
+                  if (distancia != null)
+                    Text(
+                      distancia < 1000
+                          ? 'A ${distancia.round()} m de tu ubicación (en línea recta)'
+                          : 'A ${(distancia / 1000).toStringAsFixed(1).replaceAll('.', ',')} km de tu ubicación (en línea recta)',
+                    )
+                  else ...[
+                    Text(
+                      _errorUbicacion ?? 'Necesitamos tu ubicación para calcular la distancia.',
+                    ),
+                    TextButton.icon(
+                      onPressed: reintentando
+                          ? null
+                          : () async {
+                              actualizarDetalle(() => reintentando = true);
+                              await _localizar();
+                              if (sheetContext.mounted) {
+                                actualizarDetalle(() => reintentando = false);
+                              }
+                            },
+                      icon: const Icon(Icons.my_location),
+                      label: Text(
+                        reintentando
+                            ? 'Buscando ubicación…'
+                            : 'Reintentar ubicación',
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(sheetContext),
+                      child: const Text('Cerrar'),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(capital.pais, style: Theme.of(context).textTheme.bodyLarge),
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cerrar'),
-                ),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

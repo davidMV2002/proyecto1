@@ -13,3 +13,5 @@
 - 11/11/2026: se utilizó un asistente de IA para preparar la pantalla de perfil y el tratamiento de la fotografía, tomando como referencia el ejemplo del profesor y la alternativa de miniatura en Firestore descrita en la actividad. La selección, los permisos y el guardado requieren pruebas reales.
 
 - 11/11/2026: se utilizó un asistente de IA para adaptar la fotografía del perfil a una miniatura comprimida en Firestore, según la alternativa elegida. La selección y el guardado necesitan pruebas reales en los dispositivos previstos.
+
+- 11/11/2026: se utilizó un asistente de IA para añadir la edición del nombre y el borrado confirmado de la foto del perfil, y para calcular la distancia desde la ubicación propia a la capital seleccionada. Estas acciones no borran el documento del perfil ni implementan una lista de capitales cercanas.
