@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -6,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../insLib/BotBarStyle.dart';
 import '../services/gps_admin.dart';
+import '../services/capitales_cercanas_service.dart';
 import '../services/capitales_service.dart';
 
 class MapaView extends StatefulWidget {
@@ -149,6 +152,25 @@ class _MapaViewState extends State<MapaView> {
     );
   }
 
+  Future<void> _mostrarCercanas() async {
+    final capital = await showModalBottomSheet<Capital>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => _ListaCapitalesCercanas(
+        capitales: _capitales,
+        posicionInicial: _posicion,
+        obtenerPosicion: () async {
+          await _localizar();
+          return _posicion;
+        },
+        mensajeUbicacion: () => _errorUbicacion,
+      ),
+    );
+    if (!mounted || capital == null) return;
+    _mostrarCapital(capital);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colores = Theme.of(context).colorScheme;
@@ -259,6 +281,15 @@ class _MapaViewState extends State<MapaView> {
                   ),
                 ),
               Positioned(
+                left: 16,
+                bottom: 44,
+                child: FilledButton.icon(
+                  onPressed: _mostrarCercanas,
+                  icon: const Icon(Icons.near_me_outlined),
+                  label: const Text('Cerca de mí'),
+                ),
+              ),
+              Positioned(
                 right: 16,
                 bottom: 44,
                 child: Column(
@@ -327,4 +358,224 @@ class _AvisoMapa extends StatelessWidget {
       ),
     ),
   );
+}
+
+class _ListaCapitalesCercanas extends StatefulWidget {
+  const _ListaCapitalesCercanas({
+    required this.capitales,
+    required this.posicionInicial,
+    required this.obtenerPosicion,
+    required this.mensajeUbicacion,
+  });
+
+  final Stream<List<Capital>> capitales;
+  final Position? posicionInicial;
+  final Future<Position?> Function() obtenerPosicion;
+  final String? Function() mensajeUbicacion;
+
+  @override
+  State<_ListaCapitalesCercanas> createState() =>
+      _ListaCapitalesCercanasState();
+}
+
+class _ListaCapitalesCercanasState extends State<_ListaCapitalesCercanas> {
+  final _servicio = CapitalesCercanasService();
+  StreamSubscription<List<Capital>>? _suscripcion;
+  List<Capital>? _capitales;
+  List<CapitalCercana>? _resultados;
+  Position? _posicion;
+  String? _error;
+  bool _errorCapitales = false;
+  bool _buscandoUbicacion = false;
+  bool _calculando = false;
+  double _progreso = 0;
+  int _revision = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _posicion = widget.posicionInicial;
+    _suscripcion = widget.capitales.listen(
+      (capitales) {
+        if (!mounted) return;
+        setState(() {
+          _capitales = capitales;
+          _errorCapitales = false;
+        });
+        _calcular();
+      },
+      onError: (_) {
+        if (!mounted) return;
+        setState(() => _errorCapitales = true);
+      },
+    );
+    if (_posicion == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _buscarUbicacion();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _revision++;
+    _suscripcion?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _buscarUbicacion() async {
+    if (_buscandoUbicacion) return;
+    setState(() {
+      _buscandoUbicacion = true;
+      _error = null;
+    });
+    try {
+      final posicion = await widget.obtenerPosicion();
+      if (!mounted) return;
+      setState(() {
+        _posicion = posicion;
+        if (posicion == null) {
+          _error =
+              widget.mensajeUbicacion() ?? 'No se pudo obtener tu ubicación.';
+        }
+      });
+      _calcular();
+    } catch (_) {
+      if (mounted) setState(() => _error = 'No se pudo obtener tu ubicación.');
+    } finally {
+      if (mounted) setState(() => _buscandoUbicacion = false);
+    }
+  }
+
+  Future<void> _calcular() async {
+    final posicion = _posicion;
+    final capitales = _capitales;
+    if (posicion == null || capitales == null) return;
+    final revision = ++_revision;
+    setState(() {
+      _calculando = true;
+      _resultados = null;
+      _progreso = 0;
+    });
+    try {
+      final lista = await _servicio.calcular(
+        latitud: posicion.latitude,
+        longitud: posicion.longitude,
+        capitales: capitales,
+        onProgress: (valor) {
+          if (mounted && revision == _revision) {
+            setState(() => _progreso = valor);
+          }
+        },
+      );
+      if (!mounted || revision != _revision) return;
+      setState(() {
+        _resultados = lista;
+        _calculando = false;
+      });
+    } catch (_) {
+      if (!mounted || revision != _revision) return;
+      setState(() {
+        _calculando = false;
+        _error = 'No se pudieron calcular las distancias.';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    child: FractionallySizedBox(
+      heightFactor: .72,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Capitales cerca de mí',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 4),
+            const Text('Distancia en línea recta, de menor a mayor.'),
+            const SizedBox(height: 16),
+            Expanded(child: _contenido()),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _contenido() {
+    if (_errorCapitales) {
+      return const Center(
+        child: Text(
+          'No se pudieron cargar las capitales. Cierra la lista y reinténtalo en el mapa.',
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(_error!, textAlign: TextAlign.center),
+            const SizedBox(height: 12),
+            if (_posicion == null)
+              TextButton.icon(
+                onPressed: _buscandoUbicacion ? null : _buscarUbicacion,
+                icon: const Icon(Icons.my_location),
+                label: const Text('Reintentar ubicación'),
+              )
+            else if (_capitales != null)
+              TextButton(onPressed: _calcular, child: const Text('Reintentar')),
+          ],
+        ),
+      );
+    }
+    if (_buscandoUbicacion ||
+        _capitales == null ||
+        _calculando ||
+        _resultados == null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(
+              value: _calculando && _progreso > 0 ? _progreso : null,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              _buscandoUbicacion
+                  ? 'Buscando tu ubicación…'
+                  : _calculando
+                  ? 'Calculando distancias…'
+                  : 'Cargando capitales…',
+            ),
+          ],
+        ),
+      );
+    }
+    if (_resultados!.isEmpty) {
+      return const Center(child: Text('No hay capitales disponibles.'));
+    }
+    return ListView.separated(
+      itemCount: _resultados!.length,
+      separatorBuilder: (_, _) => const Divider(height: 1),
+      itemBuilder: (context, index) {
+        final item = _resultados![index];
+        final distancia = item.metros < 1000
+            ? '${item.metros.round()} m'
+            : '${(item.metros / 1000).toStringAsFixed(1).replaceAll('.', ',')} km';
+        return ListTile(
+          key: ValueKey(item.capital.id),
+          leading: const Icon(Icons.location_on_outlined),
+          title: Text(item.capital.nombre),
+          subtitle: Text(item.capital.pais),
+          trailing: Text(distancia),
+          onTap: () => Navigator.pop(context, item.capital),
+        );
+      },
+    );
+  }
 }

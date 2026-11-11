@@ -59,6 +59,14 @@ La colección `Capitales` contiene un documento por capital, con estos campos:
 
 Se han cargado 20 capitales europeas como datos de ejemplo. La colección y sus documentos se pueden ampliar con esa misma estructura; los documentos sin los campos correctos se omiten. Las reglas de `firestore.rules`, ya desplegadas en este proyecto, permiten a usuarios autenticados leer `Capitales` y reservan la lectura y escritura de cada perfil a su propietario. La aplicación no puede modificar las capitales con estas reglas; su administración se realiza desde Firebase. La aplicación muestra un aviso y permite reintentar si no puede cargar las capitales. La ubicación propia se obtiene en el dispositivo y no se guarda ni comparte.
 
+### Capitales cerca de mí
+
+La lista **Capitales cerca de mí** muestra las capitales ordenadas por distancia en línea recta desde la última ubicación obtenida en el dispositivo. Cada resultado indica la distancia y permite abrir el detalle de la capital. Si no se dispone de ubicación, es necesario conceder permiso y volver a intentarlo. La ubicación propia no se guarda ni se comparte.
+
+La aplicación escucha la colección `Capitales` con `snapshots()`: así puede actualizar el mapa y la lista si los documentos cambian mientras están abiertos. La distancia se calcula y la lista se ordena en el dispositivo, a partir de esas capitales y de la posición local; Firestore no realiza una consulta ordenada por distancia. Por tanto, esta lista no sustituye las cuatro consultas específicas requeridas por la práctica.
+
+En Android e iOS, el cálculo y la ordenación se ejecutan en un isolate que comunica el progreso a la interfaz. Para unas veinte capitales no es imprescindible usar un isolate; se utiliza para practicar y comprobar la comunicación sin bloquear la pantalla. En web no está disponible `Isolate.spawn`, por lo que el cálculo se realiza en el hilo principal cediendo el control entre lotes y la ordenación también se hace en ese hilo. La ubicación y la lectura de Firestore son operaciones asíncronas y permanecen fuera del isolate.
+
 ### Organización del código del mapa
 
 - `lib/views/mapa_view.dart` coordina la pantalla, muestra el mapa y la ubicación propia, y gestiona los controles y mensajes.
