@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import 'google_sign_in_button.dart';
+import '../insLib/google_sign_in_button.dart';
 
 class Loginview extends StatefulWidget {
   const Loginview({super.key});
