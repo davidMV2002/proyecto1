@@ -29,7 +29,17 @@ La configuración de Firebase identifica el proyecto; no incluyas contraseñas, 
 
 La bienvenida tiene tres páginas deslizables y los botones **Siguiente**, **Omitir** y **Comenzar**. Al omitirla o completarla, se guarda `deslizablesVistos: true` en `Perfiles/{uid}` y se abre Home. Así no vuelve a mostrarse para ese perfil en los siguientes accesos. Si el campo no existe, la bienvenida se considera pendiente.
 
-Home muestra un saludo con el nombre del perfil y un botón para cerrar sesión y volver al login. Su barra inferior incluye **Principal**, **Mapa**, **Notificaciones** y **Mensajes**.
+Home muestra un saludo con el nombre del perfil y un botón para cerrar sesión y volver al login. Su barra inferior incluye **Principal**, **Mapa**, **Notificaciones** y **Perfil**.
+
+## Perfil y fotografía
+
+La pestaña **Perfil** muestra el nombre y la edad del usuario que ha iniciado sesión y permite elegir una fotografía desde la cámara o la galería. Se informa si falla la selección, el permiso o el guardado; cancelar la selección no cambia la foto anterior.
+
+La fotografía se reduce y comprime como JPEG antes de codificarse en base64 y guardarse en el campo `fotoBase64` del documento `Perfiles/{uid}` en Firestore. Se guarda una miniatura de menos de 300 KiB en lugar del archivo original para mantener el documento por debajo del límite de tamaño de Firestore. Al mostrar la foto, la aplicación decodifica los datos guardados. La actualización solo modifica ese campo y conserva el resto del perfil.
+
+En Android e iOS, la compresión se realiza mediante `compute` en un isolate mientras se muestra un indicador de espera. En web, `compute` se ejecuta en el hilo principal, por lo que una imagen grande podría afectar temporalmente a la interfaz. Esta opción guarda la foto en Firestore y no requiere configurar Firebase Storage ni activar Blaze.
+
+En iOS se declaran los motivos para utilizar la cámara y la fototeca. Android usa los selectores del sistema proporcionados por `image_picker`; en navegador, la disponibilidad de la cámara depende del dispositivo y del navegador. Las pruebas reales de permisos, cámara y galería deben hacerse en cada plataforma.
 
 ## Mapa y ubicación
 
@@ -65,4 +75,3 @@ El GPS usa señales de satélites: ofrece buena precisión en exteriores, aunque
 
 - Añadir las fotos de bienvenida; por ahora se muestran iconos en su lugar.
 - Implementar Notificaciones: actualmente muestra un aviso de que está pendiente.
-- Implementar Mensajes: actualmente abre una pantalla temporal en la ruta `/XXX`.

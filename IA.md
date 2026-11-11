@@ -9,3 +9,7 @@
 - 11/11/2026: se utilizó un asistente de IA para adaptar el mapa a la ubicación propia, eliminando de la pantalla la consulta y publicación de ubicaciones de perfiles.
 
 - 11/11/2026: se utilizó un asistente de IA para añadir marcadores de capitales cargados desde Firestore, documentar la estructura de la colección y cargar 20 capitales de ejemplo. La lectura depende de las reglas de Firestore.
+
+- 11/11/2026: se utilizó un asistente de IA para preparar la pantalla de perfil y el tratamiento de la fotografía, tomando como referencia el ejemplo del profesor y la alternativa de miniatura en Firestore descrita en la actividad. La selección, los permisos y el guardado requieren pruebas reales.
+
+- 11/11/2026: se utilizó un asistente de IA para adaptar la fotografía del perfil a una miniatura comprimida en Firestore, según la alternativa elegida. La selección y el guardado necesitan pruebas reales en los dispositivos previstos.

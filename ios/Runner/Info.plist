@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSCameraUsageDescription</key>
+	<string>La cámara permite tomar una foto para tu perfil.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>La galería permite elegir una foto para tu perfil.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>La app necesita tu ubicación para centrar el mapa y mostrar perfiles cercanos.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>

@@ -20,7 +20,7 @@ class Botbarstyle extends StatelessWidget {
             const SnackBar(content: Text('Notificaciones próximamente.')),
           );
         case 3:
-          Navigator.pushReplacementNamed(context, '/XXX');
+          Navigator.pushReplacementNamed(context, '/PerfilView');
       }
     },
     destinations: const [
@@ -30,10 +30,7 @@ class Botbarstyle extends StatelessWidget {
         icon: Icon(Icons.notifications_outlined),
         label: 'Notificaciones',
       ),
-      NavigationDestination(
-        icon: Icon(Icons.messenger_outline),
-        label: 'Mensajes',
-      ),
+      NavigationDestination(icon: Icon(Icons.person_outline), label: 'Perfil'),
     ],
   );
 }
