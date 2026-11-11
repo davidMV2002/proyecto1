@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:proyecto1/services/distancias_service.dart';
-import 'package:proyecto1/services/mapa_service.dart';
+import 'package:proyecto1/services/perfil_mapa.dart';
 
 PerfilMapa perfil(String uid, double latitud, double longitud) => PerfilMapa(
   uid: uid,

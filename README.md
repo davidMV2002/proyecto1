@@ -39,6 +39,17 @@ La colección existente `Perfiles` guarda por cada usuario, en el documento iden
 
 En Android se declaran permisos de ubicación aproximada y precisa, y en iOS la descripción del uso de ubicación en primer plano. En navegador se necesita un contexto seguro (HTTPS o localhost) y conceder el permiso del navegador. El mapa necesita conexión para descargar las teselas; si los servicios de ubicación están apagados, se deniega el permiso o se agota el tiempo de espera, se informa al usuario y se puede reintentar.
 
+### Organización del código del mapa
+
+El código sigue la separación de responsabilidades del ejemplo del profesor, adaptada a los perfiles de esta aplicación:
+
+- `lib/views/mapa_view.dart` coordina la pantalla, muestra el mapa y sus marcadores, y gestiona los controles y mensajes.
+- `lib/services/gps_admin.dart` comprueba el servicio y los permisos de ubicación y obtiene una posición puntual. Leer la posición no la comparte.
+- `lib/services/firebase_admin.dart` escucha los perfiles de Firestore y guarda la posición en el perfil propio cuando la persona confirma que quiere compartirla.
+- `lib/services/perfil_mapa.dart` define los datos de los perfiles que aparecen en el mapa; `lib/services/distancias_service.dart` calcula y ordena sus distancias para la lista de perfiles cercanos.
+
+A diferencia del ejemplo del profesor, esta aplicación usa la colección `Perfiles` y no consulta terremotos. Tampoco publica continuamente el GPS: la posición se guarda únicamente tras pulsar **Compartir ubicación** y confirmar la acción.
+
 ### Distancias y concurrencia
 
 La lista de perfiles cercanos calcula la distancia en línea recta respecto a la posición obtenida. En Android y otras plataformas nativas el cálculo y la ordenación por distancia se ejecutan en un isolate, que comunica el progreso mediante mensajes. Calcular unas veinte distancias no exige un isolate: se usa aquí para practicar y medir la comunicación sin bloquear la interfaz. En web `Isolate.spawn` no está disponible; el cálculo se realiza por lotes cediendo el control a la interfaz y la ordenación se hace en el hilo principal. La lectura de Firestore y la obtención de ubicación ya son operaciones asíncronas, por lo que no se trasladan al isolate.

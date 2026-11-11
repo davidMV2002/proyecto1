@@ -4,7 +4,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-import 'mapa_service.dart';
+import 'perfil_mapa.dart';
 
 class PerfilDistancia {
   const PerfilDistancia(this.perfil, this.metros);

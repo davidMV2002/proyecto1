@@ -5,7 +5,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../services/mapa_service.dart';
+import '../services/firebase_admin.dart';
+import '../services/gps_admin.dart';
+import '../services/perfil_mapa.dart';
 import '../services/distancias_service.dart';
 import '../insLib/BotBarStyle.dart';
 
@@ -17,7 +19,8 @@ class MapaView extends StatefulWidget {
 }
 
 class _MapaViewState extends State<MapaView> {
-  final _servicio = MapaService();
+  final _firebaseAdmin = FirebaseAdmin();
+  final _gpsAdmin = GPSAdmin();
   final _controlador = MapController();
   static const _centroInicial = LatLng(40.4168, -3.7038);
   late Stream<List<PerfilMapa>> _perfiles;
@@ -29,7 +32,7 @@ class _MapaViewState extends State<MapaView> {
   @override
   void initState() {
     super.initState();
-    _perfiles = _servicio.observarPerfiles();
+    _perfiles = _firebaseAdmin.observarPerfiles();
     WidgetsBinding.instance.addPostFrameCallback((_) => _localizar());
   }
 
@@ -46,7 +49,7 @@ class _MapaViewState extends State<MapaView> {
       _errorUbicacion = null;
     });
     try {
-      final posicion = await _servicio.obtenerUbicacion();
+      final posicion = await _gpsAdmin.obtenerUbicacion();
       if (!mounted) return;
       setState(() => _posicion = posicion);
       _controlador.move(LatLng(posicion.latitude, posicion.longitude), 13);
@@ -86,7 +89,7 @@ class _MapaViewState extends State<MapaView> {
     if (confirmar != true || !mounted) return;
     setState(() => _guardando = true);
     try {
-      await _servicio.guardarUbicacion(posicion);
+      await _firebaseAdmin.guardarUbicacion(posicion);
       if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text('Ubicación compartida.')));
@@ -236,7 +239,7 @@ class _MapaViewState extends State<MapaView> {
                         texto: 'No se pudieron cargar los perfiles.',
                         accion: TextButton(
                           onPressed: () => setState(
-                            () => _perfiles = _servicio.observarPerfiles(),
+                            () => _perfiles = _firebaseAdmin.observarPerfiles(),
                           ),
                           child: const Text('Reintentar'),
                         ),
